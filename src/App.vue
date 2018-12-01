@@ -11,23 +11,27 @@
                         <a target="_blank" href="#"></a>
                     </div>
                     <div id="menu" class="right-box">
-                        <span style="display: none;">
+                        <span v-show="$store.state.isLogin==false" style="display: none;">
                             <a href="" class="">登录</a>
                             <strong>|</strong>
                             <a href="" class="">注册</a>
                             <strong>|</strong>
                         </span>
-                        <span>
-                            <a href="" class="">会员中心</a>
+                        <span v-show="$store.state.isLogin==true">
+                            <!-- <a href class> -->
+                            <router-link to="/vipCenter">会员中心</router-link>
+                            <!-- </a> -->
                             <strong>|</strong>
-                            <a>退出</a>
+                            <a @click="logout">退出</a>
                             <strong>|</strong>
                         </span>
-                        <a href="" class="">
+                        <!-- <a href="" class=""> -->
+                        <router-link to="/shopCart">
                             <i class="iconfont icon-cart"></i>购物车(
                             <span id="shoppingCartCount">
-                                <span>4</span>
-                            </span>)</a>
+                                <span>{{$store.getters.totalCount}}</span>
+                            </span>)
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -60,9 +64,9 @@
                                 </a>
                             </li>
                             <li class="down">
-                                <a href="#" class="">
-                                    <span class="out" style="top: 0px;">会员权益</span>
-                                </a>
+                                <!-- <a href class> -->
+                                <router-link to="/vipCenter">会员中心</router-link>
+                                <!-- </a> -->
                             </li>
                             <li class="goods">
                                 <a href="" class="router-link-exact-active ">
@@ -120,10 +124,24 @@
 </template>
 
 <script>
-
 export default {
-  name: 'app',
-}
+  name: "app",
+  methods: {
+    logout() {
+      this.$axios.get("site/account/logout").then(result => {
+        //   console.log(result);
+        if (result.data.status == 0) {
+          this.$Message.success(result.data.message);
+          //编程式导航
+          this.$router.push("/index");
+          //修改Vuex中的登录字段外false
+          //把数据提交到main上 然后再让显示是否登录去根据状态去v-show
+          this.$store.commit("changeLogin", false);
+        }
+      });
+    }
+  }
+};
 </script>
 
 <style>
